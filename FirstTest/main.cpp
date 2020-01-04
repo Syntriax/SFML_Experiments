@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <sstream>      // std::ostringstream
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include "Player.hpp"
 
 #define WindowSize  sf::VideoMode(960, 540)

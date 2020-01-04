@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <math.h>
+#include <cmath>
 
 class Entity;
 
@@ -34,9 +34,9 @@ class Entity
     public:
         Entity();
         void ApplyForce(sf::Vector2f, float);
+        void ApplyDrag(float, float);
         void ApplyGravity(float);
         void ApplyVelocity(float);
-        void ApplyDrag(float, float);
         void SetPosition(float, float, bool = true);
         void SetVelocity(float, float, bool = true);
         sf::Vertex &GetVertex();
