@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <sstream>
 #include <cmath>
-#include "Rocket.hpp"
+#include "SynGame.hpp"
 
 #define WindowSize  sf::VideoMode(960, 540)
 #define WindowStyle sf::Style::Titlebar | sf::Style::Close
@@ -49,6 +49,8 @@ int main()
     player.SetGravity(10 * SizeMultiplier);
     player.SetPosition(480, -50);
     player.SetActive(true);
+    player.particleSystem.SetParticleLifeTime(1.5);
+    player.particleSystem.SetSize(25);
 
     text.setFont(font);
     window.setVerticalSyncEnabled(true);
@@ -101,6 +103,8 @@ int main()
         window.clear();
         window.draw(text);
         window.draw(&terrain[0], 320, sf::PrimitiveType::LinesStrip);
+        for (int i = 0; i < player.particleSystem.Size(); i++)
+            window.draw(&player.particleSystem[i].GetVertex(), 1, sf::PrimitiveType::Points);
         window.draw(player.GetSprite());
         window.display();
     }
