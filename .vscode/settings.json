@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "ios": "cpp",
+        "system_error": "cpp",
+        "vector": "cpp",
+        "xiosbase": "cpp",
+        "xstring": "cpp",
+        "xtree": "cpp",
+        "sstream": "cpp",
+        "*.m": "cpp",
+        "cmath": "cpp",
+        "type_traits": "cpp"
+    }
+}
