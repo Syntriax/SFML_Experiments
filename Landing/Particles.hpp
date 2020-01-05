@@ -1,4 +1,3 @@
-#include <iostream>
 #include "SynGame.hpp"
 
 #pragma region Particle
@@ -37,8 +36,6 @@
         
         if(!isActive)
             return;
-
-        std::cout << position.x << ", " << position.y << "\n";
 
         remainingLifeTime -= deltaTime;
         ChangeColorOverLifeTime();
@@ -104,13 +101,13 @@
         for (i = 0; i < particleSize; i++)
         {
             particle = &particles[i];
+            particle -> Update(deltaTime);
             if(particle -> IsLifeTimeOver())
             {
                 particle -> ResetRemainingLifeTime();
                 particle -> SetPosition(position.x, position.y, false);
                 particle -> SetVelocity(sf::Vector2f(Random(-10.0, 10.0), Random(-10.0, 10.0)));
             }
-            particle -> Update(deltaTime);
         }
     }
 
