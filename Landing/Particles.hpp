@@ -32,17 +32,25 @@
 
     void Particle::Update(float deltaTime)
     {
-        PhysicEntity::Update(deltaTime);
-        
         if(!isActive)
             return;
 
-        remainingLifeTime -= deltaTime;
+        if(IsLifeTimeOver())
+            return;
+            
+        PhysicEntity::Update(deltaTime);
+        
         ChangeColorOverLifeTime();
+        remainingLifeTime -= deltaTime;
     }
 
     void Particle::ChangeColorOverLifeTime()
     {
+        if(lifeTime < 0.0)
+        {
+            vertex.color.a = 0;
+            return;
+        }
         int value = 255 * (remainingLifeTime / lifeTime);
         vertex.color.a = value;
     }
@@ -74,13 +82,23 @@
         private:
             std::vector<Particle> particles;
             sf::Color color;
+            sf::Vector2f localVelo;
+            float rotation;
+            float speed;
             int particleSize;
             float particleLifeTime;
+            float spawnRate;
+            float spawnTimer;
         public:
             ParticleSystem();
             void SetSize(int);
+            void SetSpeed(float);
+            void SetRotation(float);
+            void SetLocalVelocity(sf::Vector2f);
             void SetParticleLifeTime(float);
+            void SetSpawnRate(int);
             void Update(float);
+            void Play();
             Particle &operator[](int);
             int Size();
     };
@@ -91,6 +109,8 @@
         color = sf::Color::White;
         particleSize = 0;
         particleLifeTime = 0.1;
+        spawnRate = 10;
+        spawnTimer = 0.0;
     }
 
     void ParticleSystem::Update(float deltaTime)
@@ -98,17 +118,45 @@
         int i;
         Particle *particle;
 
+        if(spawnTimer > 0.0)
+            spawnTimer -= deltaTime;
+
         for (i = 0; i < particleSize; i++)
         {
             particle = &particles[i];
             particle -> Update(deltaTime);
+        }
+    }
+
+    void ParticleSystem::Play()
+    {
+        int i;
+        float spawnRotation;
+        sf::Vector2f spawnVelocity;
+        Particle *particle;
+
+        if(spawnTimer > 0.0)
+            return;
+
+        for (i = 0; i < particleSize; i++)
+        {
+            particle = &particles[i];
             if(particle -> IsLifeTimeOver())
             {
                 particle -> ResetRemainingLifeTime();
                 particle -> SetPosition(position.x, position.y, false);
-                particle -> SetVelocity(sf::Vector2f(Random(-10.0, 10.0), Random(-10.0, 10.0)));
+                spawnRotation = Random(-0.785, 0.785) - DegToRad * rotation; // 0.785 3.14(pi)/4
+                spawnVelocity = sf::Vector2f(sin(spawnRotation), cos(spawnRotation)) * speed;
+                particle -> SetVelocity(spawnVelocity + localVelo);
+                spawnTimer = 1 / spawnRate;
+                break;
             }
         }
+    }
+
+    void ParticleSystem::SetSpawnRate(int rate)
+    {
+        spawnRate = rate;
     }
 
     void ParticleSystem::SetSize(int size)
@@ -126,6 +174,22 @@
                 particles.push_back(newParticle);
                 particleSize++;
             }
+    }
+
+    void ParticleSystem::SetSpeed(float speed)
+    {
+        this -> speed = speed;
+    }
+
+    void ParticleSystem::SetRotation(float rotation)
+    {
+        this -> rotation = rotation;
+    }
+
+    void ParticleSystem::SetLocalVelocity(sf::Vector2f velo)
+    {
+        velo.y *= -1;
+        localVelo = velo;
     }
 
     void ParticleSystem::SetParticleLifeTime(float lifeTime)

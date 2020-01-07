@@ -8,7 +8,7 @@
 #define WindowTitle "Test Window Syntriax"
 
 #define SizeMultiplier 5
-#define WinThreshold 1.5
+#define WinThreshold 2.0
 
 sf::Vertex CreateVertex(double, double);
 
@@ -49,8 +49,10 @@ int main()
     player.SetGravity(10 * SizeMultiplier);
     player.SetPosition(480, -50);
     player.SetActive(true);
-    player.particleSystem.SetParticleLifeTime(1.5);
-    player.particleSystem.SetSize(25);
+    player.particleSystem.SetParticleLifeTime(2);
+    player.particleSystem.SetSpawnRate(25);
+    player.particleSystem.SetSize(50);
+    player.particleSystem.SetSpeed(10 * SizeMultiplier);
 
     text.setFont(font);
     window.setVerticalSyncEnabled(true);

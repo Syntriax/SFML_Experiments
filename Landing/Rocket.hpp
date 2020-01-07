@@ -1,11 +1,4 @@
-// #include <SFML/Graphics.hpp>
-// #include <cmath>
 #include "SynGame.hpp"
-// #include "Particles.hpp"
-// #include "PhysicEntity.hpp"
-
-#define DegToRad 0.0174533 
-#define RotationLimit 45.0 
 
 class Rocket : public PhysicEntity
 {
@@ -56,15 +49,18 @@ void Rocket::Thrust(float deltaTime)
     float force = thrustForce * deltaTime;
     velocity.x += sin(rotation * DegToRad) * force;
     velocity.y += cos(rotation * DegToRad) * force;
-    
-    particleSystem.SetPosition(position);
-    particleSystem.Update(deltaTime);
+    particleSystem.Play();
 }
 
 void Rocket::Update(float deltaTime)
 {
     PhysicEntity::Update(deltaTime);
+    
+    particleSystem.SetPosition(GetLandingPoint(false));
+    particleSystem.SetRotation(rotation);
+    particleSystem.SetLocalVelocity(velocity);
     particleSystem.Update(deltaTime);
+
     sprite.setPosition(GetPosition());
 }
 
