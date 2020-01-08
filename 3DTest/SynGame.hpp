@@ -8,6 +8,7 @@
     #include <vector>
     #include <cmath>
     #include "Timer.hpp"
+    #include "Vectors.hpp"
     #include "Window.hpp"
     #include "Render.hpp"
 #endif
