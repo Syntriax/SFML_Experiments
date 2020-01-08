@@ -9,4 +9,5 @@
     #include <cmath>
     #include "Timer.hpp"
     #include "Window.hpp"
+    #include "Render.hpp"
 #endif

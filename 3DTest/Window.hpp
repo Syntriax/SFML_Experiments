@@ -2,22 +2,24 @@
 
 class Window
 {
-    private:
+    protected:
         sf::RenderWindow window;
         sf::Event event;
         sf::Vector2u size;
+        sf::Vector2u windowedSize;
         std::string title;
         sf::Uint32 style;
         Timer timer; 
         bool isFocused;
+        bool fullscreen;
     public:
-        Window(unsigned int = 960, unsigned int = 540, std::string = "Window", sf::Uint32 = 7U);
-        void CreateWindow();
-        void CloseWindow();
-        void Update();
+        Window(unsigned int = 960, unsigned int = 540, std::string = "Window", sf::Uint32 = sf::Style::Titlebar | sf::Style::Close);
+        virtual void CreateWindow();
+        virtual void CloseWindow();
+        virtual void Update();
         void SetFrameRate(int = 0);
         void SetTitle(std::string);
-        void SetSize(unsigned int, unsigned int);
+        virtual void SetSize(unsigned int, unsigned int);
         bool IsOpen();
 };
 
@@ -31,6 +33,12 @@ void Window::Update()
             isFocused = false;
         else if (event.type == sf::Event::GainedFocus)
             isFocused = true;
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::F))
+        {
+            fullscreen = !fullscreen;
+            CloseWindow();
+            CreateWindow();
+        }
     }
 
     if(!isFocused)
@@ -45,7 +53,12 @@ Window::Window(unsigned int width, unsigned int height, std::string title, sf::U
     this -> size.y = height;
     this -> title  = title;
     this -> style  = style;
+
+    windowedSize.x = width;
+    windowedSize.y = height;
+    
     isFocused = true;
+    fullscreen = false;
     SetFrameRate();
     CreateWindow();
 }
@@ -55,8 +68,20 @@ void Window::CreateWindow()
     if(window.isOpen())
         return;
 
-    sf::VideoMode videoMode(size.x, size.y);
-    window.create(videoMode, title, style);
+    if(!fullscreen)
+    {
+        size = windowedSize;
+        sf::VideoMode videoMode(windowedSize.x, windowedSize.y);
+        window.create(videoMode, title, style);
+    }
+    else
+    {
+        sf::VideoMode videoMode(sf::VideoMode::getDesktopMode());
+        size.x = videoMode.width;
+        size.y = videoMode.height;
+        window.create(videoMode, title, sf::Style::Fullscreen);
+    }
+
     timer.ResetTimer();
 }
 
@@ -93,7 +118,11 @@ void Window::SetTitle(std::string title)
 void Window::SetSize(unsigned int width, unsigned int height)
 {
     size = sf::Vector2u(width, height);
+    sf::Vector2i pos = window.getPosition();
+    CloseWindow();
     window.setSize(size);
+    CreateWindow();
+    window.setPosition(pos);
 }
 
 bool Window::IsOpen()
