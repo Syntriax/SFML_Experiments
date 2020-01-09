@@ -19,6 +19,7 @@
             Vector1 operator/=(float);
             Vector1 operator*=(float);
             float Magnitude();
+            float Distance(Vector1);
             Vector1 Normalized();
     };
 
@@ -39,6 +40,11 @@
     Vector1 Vector1::operator*=(float parameter) { x *= parameter; return *this; }
 
     float Vector1::Magnitude() { return x; }
+    float Vector1::Distance(Vector1 parameter) 
+    { 
+        Vector1 distanceVector = (*this) - parameter;
+        return distanceVector.Magnitude(); 
+    }
     Vector1 Vector1::Normalized() { return Vector1(x < 0.0 ? -1.0 : 1.0); }
 #pragma endregion
 #pragma region Vector2
@@ -60,6 +66,7 @@
             Vector2 operator/=(float);
             Vector2 operator*=(float);
             float Magnitude();
+            float Distance(Vector2);
             Vector2 Normalized();
     };
 
@@ -80,6 +87,11 @@
     Vector2 Vector2::operator*=(float parameter) { x /= parameter; y /= parameter; return *this; }
 
     float Vector2::Magnitude() { return sqrt(x*x+y*y); }
+    float Vector2::Distance(Vector2 parameter) 
+    { 
+        Vector2 distanceVector = (*this) - parameter;
+        return distanceVector.Magnitude(); 
+    }
     Vector2 Vector2::Normalized() 
     { 
         Vector2 vector = Vector2(x, y);
@@ -105,6 +117,7 @@
             Vector3 operator/=(float);
             Vector3 operator*=(float);
             float Magnitude();
+            float Distance(Vector3);
             Vector3 Normalized();
     };
 
@@ -125,6 +138,11 @@
     Vector3 Vector3::operator* (float parameter) { Vector3 vector = Vector3(x, y, z); vector.x *= parameter; vector.y *= parameter; vector.z *= parameter; return vector; }
 
     float Vector3::Magnitude() { return sqrt(x*x+y*y+z*z); }
+    float Vector3::Distance(Vector3 parameter) 
+    { 
+        Vector3 distanceVector = (*this) - parameter;
+        return distanceVector.Magnitude(); 
+    }
     Vector3 Vector3::Normalized() 
     { 
         Vector3 vector = Vector3(x, y, z);
