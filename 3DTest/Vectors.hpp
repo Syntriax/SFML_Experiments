@@ -48,9 +48,10 @@
     Vector1 Vector1::Normalized() { return Vector1(x < 0.0 ? -1.0 : 1.0); }
 #pragma endregion
 #pragma region Vector2
-    class Vector2 : public Vector1
+    class Vector2
     {
         public:
+            float x;
             float y;
             Vector2(float = 0, float = 0);
             Vector2 operator+(Vector2);
@@ -70,7 +71,7 @@
             Vector2 Normalized();
     };
 
-    Vector2::Vector2(float x, float y) : Vector1(x) { this -> y = y; }
+    Vector2::Vector2(float x, float y) { this -> x = x; this -> y = y; }
 
     Vector2 Vector2::operator+ (Vector2 parameter) { Vector2 vector = Vector2(x, y); vector.x += parameter.x; vector.y += parameter.y; return vector; }
     Vector2 Vector2::operator- (Vector2 parameter) { Vector2 vector = Vector2(x, y); vector.x -= parameter.x; vector.y -= parameter.y; return vector; }
@@ -99,9 +100,11 @@
     }
 #pragma endregion
 #pragma region Vector3
-    class Vector3 : public Vector2
+    class Vector3
     {
         public:
+            float x;
+            float y;
             float z;
             Vector3(float = 0, float = 0, float = 0);
             Vector3 operator+(Vector3);
@@ -121,7 +124,7 @@
             Vector3 Normalized();
     };
 
-    Vector3::Vector3(float x, float y, float z) : Vector2(x, y) { this -> z = z; }
+    Vector3::Vector3(float x, float y, float z) { this -> x = x; this -> y = y; this -> z = z; }
 
     Vector3 Vector3::operator+ (Vector3 parameter) { Vector3 vector = Vector3(x, y, z); vector.x += parameter.x; vector.y += parameter.y; vector.z += parameter.z; return vector; }
     Vector3 Vector3::operator- (Vector3 parameter) { Vector3 vector = Vector3(x, y, z); vector.x -= parameter.x; vector.y -= parameter.y; vector.z -= parameter.z; return vector; }
@@ -140,7 +143,10 @@
     float Vector3::Magnitude() { return sqrt(x*x+y*y+z*z); }
     float Vector3::Distance(Vector3 parameter) 
     { 
-        Vector3 distanceVector = (*this) - parameter;
+        Vector3 distanceVector;
+        distanceVector.x = x - parameter.x;
+        distanceVector.y = y - parameter.y;
+        distanceVector.z = z - parameter.z;
         return distanceVector.Magnitude(); 
     }
     Vector3 Vector3::Normalized() 

@@ -9,6 +9,8 @@
     #include <cmath>
     #include "Timer.hpp"
     #include "Vectors.hpp"
+    #include "Objects.hpp"
+    #include "RayMarch.hpp"
     #include "Window.hpp"
     #include "Render.hpp"
 #endif
