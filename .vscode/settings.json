@@ -51,6 +51,25 @@
         "iostream": "cpp",
         "list": "cpp",
         "unordered_set": "cpp",
-        "xhash": "cpp"
-    }
+        "xhash": "cpp",
+        "*.tcc": "cpp",
+        "atomic": "cpp",
+        "array": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "cstdarg": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "unordered_map": "cpp",
+        "functional": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "optional": "cpp",
+        "random": "cpp",
+        "string_view": "cpp",
+        "fstream": "cpp",
+        "concepts": "cpp",
+        "queue": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Enabled"
 }
