@@ -1,11 +1,16 @@
 #include "SynGame.hpp"
 
 sf::Font font;
+sf::Color textColor = sf::Color(35, 35, 35);
+sf::Color backColor = sf::Color(125, 162, 169);
+sf::Color frontColor = sf::Color(247, 247, 247);
+
+class GUIWindow;
 
 #pragma region Text
     class SynText
     {
-        private:
+        protected:
             int x;
             int y;
             int offsetX;
@@ -14,10 +19,10 @@ sf::Font font;
             sf::Text textDisplay;
         public:
             SynText(std::string = "", int = 0, int = 0, int = 0, int = 0, bool = false);
-            void SetText(std::string);
-            void SetOffset(int, int);
-            void SetPosition(int, int);
-            void SetCentered(bool);
+            virtual void SetText(std::string);
+            virtual void SetOffset(int, int);
+            virtual void SetPosition(int, int);
+            virtual void SetCentered(bool);
             sf::Text GetText();
             ~SynText();
     };
@@ -26,10 +31,10 @@ sf::Font font;
     {    
         this -> isCentered = isCentered;
         textDisplay.setFont(font);
+        textDisplay.setColor(textColor);
         SetText(text);
         SetOffset(offsetX, offsetX);
         SetPosition(x, y);
-        textDisplay.setColor(sf::Color::Red);
     }
 
     void SynText::SetText(std::string text)
@@ -72,13 +77,145 @@ sf::Font font;
     }
 #pragma endregion
 
+#pragma region InputField
+    class SynInputField : public SynText
+    {
+        private:
+            int width;
+            int height;
+            std::stringstream stream;
+            sf::Vertex vertices[4];
+            void CalculateVertices();
+            bool isFocused;
+        public:
+            SynInputField();
+            void SetText(std::string);
+            void SetArea(int, int);
+            void SetOffset(int, int);
+            void SetPosition(int, int);
+            bool IsMouseOver(int, int);
+            void AddToInput(char);
+            void Click(bool);
+            unsigned int GetValue();
+            sf::Vertex *GetVertices();
+            ~SynInputField();
+    };
+    
+    SynInputField::SynInputField()
+    {
+        isFocused = false;
+        stream.clear();
+        SetOffset(7, 7);
+        SetText(stream.str());
+
+        for (int i = 0; i < 4; i++)
+            vertices[i].color = frontColor;
+    }
+
+    void SynInputField::SetText(std::string newText)
+    {
+        SynText::SetText(newText);
+        CalculateVertices();
+    }
+    
+    void SynInputField::SetOffset(int x, int y)
+    {
+        SynText::SetOffset(x, y);
+        CalculateVertices();
+    }
+
+    void SynInputField::SetPosition(int x, int y)
+    {
+        SynText::SetPosition(x, y);
+        CalculateVertices();
+    }
+
+    void SynInputField::CalculateVertices()
+    {
+        float newWidth = width / 2;
+        float newHeight = height / 2;
+
+        vertices[0].position = sf::Vector2f(x, y);
+        vertices[1].position = sf::Vector2f(x + newWidth, y);
+        vertices[2].position = sf::Vector2f(x + newWidth, y + newHeight);
+        vertices[3].position = sf::Vector2f(x, y + newHeight);
+    }
+
+    sf::Vertex *SynInputField::GetVertices()
+    {
+        return vertices;
+    }
+
+    unsigned int SynInputField::GetValue()
+    {
+        unsigned int value = 0;
+        std::stringstream temp;
+        temp << stream.str();
+        temp >> value;
+        return value;
+    }
+
+    bool SynInputField::IsMouseOver(int mouseX, int mouseY)
+    {
+        bool isOver;
+        int halfWidth = width / 2;
+        int halfHeight = height / 2;
+        isOver = mouseX <= x + halfWidth && 
+                mouseX >= x && 
+                mouseY <= y + halfHeight && 
+                mouseY >= y;
+        return isOver;
+    }
+
+    void SynInputField::Click(bool isFocused)
+    {
+        this -> isFocused = isFocused;
+    }
+
+    void SynInputField::AddToInput(char character)
+    {
+        if(!isFocused) return;
+
+        if(character == 59 && stream.str().length() > 0) // Backspace
+        {
+            std::string temp = stream.str();
+            temp.pop_back();
+            stream.str("");
+            stream << temp;
+            SetText(stream.str());
+            return;
+        }
+        
+        if(character < 26 || character > 35) // 0 - 9 keys
+            return;
+
+        if(stream.str().length() > 8)
+            return;
+        stream << character - 26;
+        SetText(stream.str());
+    }
+
+    void SynInputField::SetArea(int width, int height)
+    {
+        this -> width = width;
+        this -> height = height;
+        SetPosition(x, y);
+        CalculateVertices();
+    }
+    
+    SynInputField::~SynInputField()
+    {
+    }
+    
+#pragma endregion
+
 #pragma region Button
     class SynButton
     {
         private:
             SynText synText;
-            void (*action)(int);
-            int *value;
+            GUIWindow *window;
+            void (GUIWindow::*action)();
             int x;
             int y;
             int width;
@@ -90,7 +227,7 @@ sf::Font font;
             void SetText(std::string);
             void SetPosition(int, int);
             void SetArea(int, int);
-            void Bind(void (*)(int), int *);
+            void Bind(GUIWindow *, void (GUIWindow::*)());
             bool IsMouseOver(int, int);
             void Click();
             sf::Text GetText();
@@ -102,6 +239,7 @@ sf::Font font;
     {
         float newWidth = width / 2;
         float newHeight = height / 2;
+
         vertices[0].position = sf::Vector2f(x, y);
         vertices[1].position = sf::Vector2f(x + newWidth, y);
         vertices[2].position = sf::Vector2f(x + newWidth, y + newHeight);
@@ -111,10 +249,13 @@ sf::Font font;
     SynButton::SynButton(std::string text, int x, int y, int width, int height)
     {
         synText.SetCentered(true);
-        synText.SetOffset(0, -5);
+        synText.SetOffset(0, -7);
         SetArea(width, height);
         SetPosition(x, y);
         CalculateVertices();
+        
+        for (int i = 0; i < 4; i++)
+            vertices[i].color = frontColor;
     }
 
     void SynButton::SetText(std::string text)
@@ -138,10 +279,10 @@ sf::Font font;
         CalculateVertices();
     }
 
-    void SynButton::Bind(void (*action)(int), int *value)
+    void SynButton::Bind(GUIWindow *window, void (GUIWindow::*action)())
     {
+        this -> window = window;
         this -> action = action;
-        this -> value = value;
     }
 
     bool SynButton::IsMouseOver(int mouseX, int mouseY)
@@ -158,11 +299,9 @@ sf::Font font;
 
     void SynButton::Click()
     {
-        if(value)
-            action(*value);
-        else
-            action(y);
+        ((window)->*(action))();
     }
+
     sf::Text SynButton::GetText()
     {
         return synText.GetText();

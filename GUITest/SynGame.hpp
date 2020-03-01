@@ -8,7 +8,7 @@
     #include <vector>
     #include <iostream>
     #include <cmath>
-    #include "GUIElements.hpp"
     #include "Window.hpp"
+    #include "GUIElements.hpp"
     #include "GUIWindow.hpp"
 #endif
