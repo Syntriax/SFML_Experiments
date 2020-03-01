@@ -62,6 +62,7 @@
             bool isFocused;
             bool fullscreen;
             virtual void Update();
+            virtual void ButtonCheck(sf::Vector2i);
         public:
             Window(unsigned int = 960, unsigned int = 540, std::string = "Window", sf::Uint32 = sf::Style::Titlebar | sf::Style::Close);
             virtual void CreateWindow();
@@ -82,6 +83,8 @@
                 isFocused = false;
             else if (event.type == sf::Event::GainedFocus)
                 isFocused = true;
+            else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                ButtonCheck(sf::Mouse::getPosition(window));
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::F))
             {
                 fullscreen = !fullscreen;
@@ -94,6 +97,11 @@
             return;
         
         timer.UpdateTime();
+    }
+
+    void Window::ButtonCheck(sf::Vector2i mousePos)
+    {
+
     }
 
     Window::Window(unsigned int width, unsigned int height, std::string title, sf::Uint32 style)
@@ -130,7 +138,7 @@
             size.y = videoMode.height;
             window.create(videoMode, title, sf::Style::Fullscreen);
         }
-
+        window.setVerticalSyncEnabled(true);
         timer.ResetTimer();
     }
 

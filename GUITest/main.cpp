@@ -2,6 +2,7 @@
 
 int main()
 {
+    font.loadFromFile("../OpenSans-Bold.ttf");
     GUIWindow window(960, 540, "GUI Test");
 
     while (window.IsOpen())
