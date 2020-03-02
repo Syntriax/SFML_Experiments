@@ -9,7 +9,13 @@ class GUIWindow : public Window
         void BinaryButton();
         void QuaternaryButton();
         void OctalButton();
+        void DecimalButton();
         void HexadecimalButton();
+        void InputBinaryButton();
+        void InputQuaternaryButton();
+        void InputOctalButton();
+        void InputDecimalButton();
+        void InputHexadecimalButton();
         std::string GetBase(unsigned int, int);
     public:
         GUIWindow(unsigned int = 960, unsigned int = 540, std::string = "Window", sf::Uint32 = sf::Style::Titlebar | sf::Style::Close);
@@ -34,10 +40,41 @@ void GUIWindow::OctalButton()
     output.SetText(GetBase(input.GetValue(), 8));
 }
 
+void GUIWindow::DecimalButton()
+{
+    output.SetText(GetBase(input.GetValue(), 10));
+}
+
 void GUIWindow::HexadecimalButton()
 {
     output.SetText(GetBase(input.GetValue(), 16));
 }
+
+void GUIWindow::InputBinaryButton()
+{
+    input.SetBase(2);
+}
+
+void GUIWindow::InputQuaternaryButton()
+{
+    input.SetBase(4);
+}
+
+void GUIWindow::InputOctalButton()
+{
+    input.SetBase(8);
+}
+
+void GUIWindow::InputDecimalButton()
+{
+    input.SetBase(10);
+}
+
+void GUIWindow::InputHexadecimalButton()
+{
+    input.SetBase(16);
+}
+
 
 std::string GUIWindow::GetBase(unsigned int value, int base)
 {
@@ -46,8 +83,9 @@ std::string GUIWindow::GetBase(unsigned int value, int base)
 
     while (value > 0)
     {
-        if(counter++ % 4 == 0)
-            stringStream << ' ';
+        if(base != 10)
+            if(counter++ % 4 == 0)
+                stringStream << ' ';
 
         if(base == 16)
             if((value % base) > 9)
@@ -60,8 +98,9 @@ std::string GUIWindow::GetBase(unsigned int value, int base)
         value = value / base;
     }
 
-    while (counter++ % 4 != 0)
-        stringStream << '0';
+    if(base != 10)
+        while (counter++ % 4 != 0)
+            stringStream << '0';
 
     std::string displayValue = stringStream.str();
 
@@ -82,28 +121,50 @@ std::string GUIWindow::GetBase(unsigned int value, int base)
 
 GUIWindow::GUIWindow(unsigned int width, unsigned int height, std::string title, sf::Uint32 style) : Window(width, height, title, style)
 {
-    input.SetPosition(window.getSize().x / 3 - 100, 210);
+    input.SetPosition(window.getSize().x / 2 - 120, 210);
     input.SetArea(400, 100);
+    input.SetBase(10);
     output.SetText("");
     output.SetCentered(true);
-    output.SetPosition(window.getSize().x / 3, 310);
+    output.SetPosition(window.getSize().x / 2 - 20, 310);
     output.SetOffset(0, 0);
-    buttons = new SynButton[4];
+    buttons = new SynButton[10];
 
     (buttons + 0) -> SetText("Binary"); 
     (buttons + 1) -> SetText("Quaternary");
     (buttons + 2) -> SetText("Octal");
-    (buttons + 3) -> SetText("Hexadecimal");
+    (buttons + 3) -> SetText("Decimal");
+    (buttons + 4) -> SetText("Hexadecimal");
+
+    (buttons + 5) -> SetText("Binary"); 
+    (buttons + 6) -> SetText("Quaternary");
+    (buttons + 7) -> SetText("Octal");
+    (buttons + 8) -> SetText("Decimal");
+    (buttons + 9) -> SetText("Hexadecimal");
     
-    (buttons + 0) -> SetArea(400, 100); (buttons + 0) -> SetPosition(650, 100);
-    (buttons + 1) -> SetArea(400, 100); (buttons + 1) -> SetPosition(650, 200);
-    (buttons + 2) -> SetArea(400, 100); (buttons + 2) -> SetPosition(650, 300);
-    (buttons + 3) -> SetArea(400, 100); (buttons + 3) -> SetPosition(650, 400);
+    (buttons + 0) -> SetArea(400, 100); (buttons + 0) -> SetPosition(650, 50);
+    (buttons + 1) -> SetArea(400, 100); (buttons + 1) -> SetPosition(650, 150);
+    (buttons + 2) -> SetArea(400, 100); (buttons + 2) -> SetPosition(650, 250);
+    (buttons + 3) -> SetArea(400, 100); (buttons + 3) -> SetPosition(650, 350);
+    (buttons + 4) -> SetArea(400, 100); (buttons + 4) -> SetPosition(650, 450);
+    
+    (buttons + 5) -> SetArea(400, 100); (buttons + 5) -> SetPosition(50, 50);
+    (buttons + 6) -> SetArea(400, 100); (buttons + 6) -> SetPosition(50, 150);
+    (buttons + 7) -> SetArea(400, 100); (buttons + 7) -> SetPosition(50, 250);
+    (buttons + 8) -> SetArea(400, 100); (buttons + 8) -> SetPosition(50, 350);
+    (buttons + 9) -> SetArea(400, 100); (buttons + 9) -> SetPosition(50, 450);
 
     (buttons + 0) -> Bind(this, &GUIWindow::BinaryButton);
     (buttons + 1) -> Bind(this, &GUIWindow::QuaternaryButton);
     (buttons + 2) -> Bind(this, &GUIWindow::OctalButton);
-    (buttons + 3) -> Bind(this, &GUIWindow::HexadecimalButton);
+    (buttons + 3) -> Bind(this, &GUIWindow::DecimalButton);
+    (buttons + 4) -> Bind(this, &GUIWindow::HexadecimalButton);
+
+    (buttons + 5) -> Bind(this, &GUIWindow::InputBinaryButton);
+    (buttons + 6) -> Bind(this, &GUIWindow::InputQuaternaryButton);
+    (buttons + 7) -> Bind(this, &GUIWindow::InputOctalButton);
+    (buttons + 8) -> Bind(this, &GUIWindow::InputDecimalButton);
+    (buttons + 9) -> Bind(this, &GUIWindow::InputHexadecimalButton);
 }
 
 void GUIWindow::Update()
@@ -118,7 +179,7 @@ void GUIWindow::Update()
 
     window.clear(backColor);
 
-    for (buttonCounter = 0; buttonCounter < 4; buttonCounter++)
+    for (buttonCounter = 0; buttonCounter < 10; buttonCounter++)
     {
         window.draw((buttons + buttonCounter) -> GetVertices(), 4, sf::PrimitiveType::Quads);
         window.draw((buttons + buttonCounter) -> GetText());
@@ -135,7 +196,7 @@ void GUIWindow::ButtonCheck(sf::Vector2i mousePos)
 {
     int i;
     SynButton *current;
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 10; i++)
     {
         current = buttons + i;
         if(current -> IsMouseOver(mousePos.x, mousePos.y))

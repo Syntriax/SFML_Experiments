@@ -86,6 +86,7 @@ class GUIWindow;
             std::stringstream stream;
             sf::Vertex vertices[4];
             void CalculateVertices();
+            int base;
             bool isFocused;
         public:
             SynInputField();
@@ -96,6 +97,7 @@ class GUIWindow;
             bool IsMouseOver(int, int);
             void AddToInput(char);
             void Click(bool);
+            void SetBase(int);
             unsigned int GetValue();
             sf::Vertex *GetVertices();
             ~SynInputField();
@@ -149,9 +151,33 @@ class GUIWindow;
     unsigned int SynInputField::GetValue()
     {
         unsigned int value = 0;
+        unsigned int calculatedValue = 0;
+        char character;
+        int counter = 0;
         std::stringstream temp;
+        std::string tempString;
         temp << stream.str();
-        temp >> value;
+        
+        if(base != 10)
+            while (temp.str().length() > 0)
+            {
+                tempString = temp.str();
+                character = tempString[tempString.length() - 1];
+                tempString.pop_back();
+                temp.str("");
+                temp << tempString;
+
+                if(character >= 'A')
+                    calculatedValue = character - 'A' + 10;
+                else
+                    calculatedValue = character - '0';
+                
+                calculatedValue *= pow(base, counter++);
+                value += calculatedValue;
+            }
+        else
+            temp >> value;
+
         return value;
     }
 
@@ -172,6 +198,25 @@ class GUIWindow;
         this -> isFocused = isFocused;
     }
 
+    void SynInputField::SetBase(int base)
+    {
+        switch (base)
+        {
+            case 2:
+            case 4:
+            case 8:
+            case 10:
+            case 16:
+                this -> base = base;
+                stream.str("");
+                SetText("");
+                break;
+            
+            default:
+                return;
+        }
+    }
+
     void SynInputField::AddToInput(char character)
     {
         if(!isFocused) return;
@@ -187,11 +232,39 @@ class GUIWindow;
         }
         
         if(character < 26 || character > 35) // 0 - 9 keys
+        {
+            if(base == 16)
+            {
+                if(character > 5)
+                    return;
+            }
+            else
+                return;
+        }
+
+        switch (base)
+        {
+            case 2:
+                if(character < 26 || character > 27)
+                    return;
+                break;
+            case 4:
+                if(character < 26 || character > 29)
+                    return;
+                break;
+            case 8:
+                if(character < 26 || character > 33)
+                    return;
+                break;
+        }
+
+        if(stream.str().length() > 7)
             return;
 
-        if(stream.str().length() > 8)
-            return;
-        stream << character - 26;
+        if(base == 16 && character < 6)
+            stream << (char)(character + 65);
+        else
+            stream << character - 26;
         SetText(stream.str());
     }
 
