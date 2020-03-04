@@ -64,6 +64,7 @@
             virtual void Update();
             virtual void ButtonCheck(sf::Vector2i);
             virtual void KeyHandle(char);
+            virtual void MouseButtonPressedHandle(sf::Vector2i);
         public:
             Window(unsigned int = 960, unsigned int = 540, std::string = "Window", sf::Uint32 = sf::Style::Titlebar | sf::Style::Close);
             virtual void CreateWindow();
@@ -85,11 +86,11 @@
             else if (event.type == sf::Event::GainedFocus)
                 isFocused = true;
             else if (event.type == sf::Event::KeyPressed)
-            {
                 KeyHandle((int)event.key.code);
-            }
-            else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-                ButtonCheck(sf::Mouse::getPosition(window));
+            else if (event.type == sf::Event::MouseButtonPressed)
+                MouseButtonPressedHandle(sf::Mouse::getPosition(window));
+            // else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            //     ButtonCheck(sf::Mouse::getPosition(window));
             // if(sf::Keyboard::isKeyPressed(sf::Keyboard::F))
             // {
             //     fullscreen = !fullscreen;
@@ -110,6 +111,11 @@
     }
 
     void Window::KeyHandle(char character)
+    {
+
+    }
+
+    void Window::MouseButtonPressedHandle(sf::Vector2i mousePos)
     {
 
     }

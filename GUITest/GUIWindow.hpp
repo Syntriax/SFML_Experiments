@@ -6,6 +6,9 @@ class GUIWindow : public Window
         SynButton *buttons;
         SynText output;
         SynInputField input;
+        void ButtonCheck(sf::Vector2i);
+        void MouseButtonPressedHandle(sf::Vector2i);
+        void KeyHandle(char);
         void BinaryButton();
         void QuaternaryButton();
         void OctalButton();
@@ -20,10 +23,34 @@ class GUIWindow : public Window
     public:
         GUIWindow(unsigned int = 960, unsigned int = 540, std::string = "Window", sf::Uint32 = sf::Style::Titlebar | sf::Style::Close);
         void Update();
-        void ButtonCheck(sf::Vector2i);
-        void KeyHandle(char);
         ~GUIWindow();
 };
+
+void GUIWindow::MouseButtonPressedHandle(sf::Vector2i mousePos)
+{
+    ButtonCheck(mousePos);
+}
+
+void GUIWindow::ButtonCheck(sf::Vector2i mousePos)
+{
+    int i;
+    SynButton *current;
+    for (i = 0; i < 10; i++)
+    {
+        current = buttons + i;
+        if(current -> IsMouseOver(mousePos.x, mousePos.y))
+        {
+            (buttons + i) -> Click();
+            break;
+        }
+    }
+    input.Click(input.IsMouseOver(mousePos.x, mousePos.y));
+}
+
+void GUIWindow::KeyHandle(char character)
+{
+    input.AddToInput(character);
+}
 
 void GUIWindow::BinaryButton()
 {
@@ -189,28 +216,6 @@ void GUIWindow::Update()
     window.draw(input.GetVertices(), 4, sf::PrimitiveType::Quads);
     window.draw(input.GetText());
     window.display();
-}
-
-
-void GUIWindow::ButtonCheck(sf::Vector2i mousePos)
-{
-    int i;
-    SynButton *current;
-    for (i = 0; i < 10; i++)
-    {
-        current = buttons + i;
-        if(current -> IsMouseOver(mousePos.x, mousePos.y))
-        {
-            (buttons + i) -> Click();
-            break;
-        }
-    }
-    input.Click(input.IsMouseOver(mousePos.x, mousePos.y));
-}
-
-void GUIWindow::KeyHandle(char character)
-{
-    input.AddToInput(character);
 }
 
 GUIWindow::~GUIWindow()
