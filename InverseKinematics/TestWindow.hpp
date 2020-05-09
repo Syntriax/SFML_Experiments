@@ -25,7 +25,7 @@ void TestWindow::Update()
     sf::Vertex *array = new sf::Vertex[this -> pointCount];
     
     for (i = 0; i < this -> pointCount; i++)
-        *(array + i) = sf::Vertex(sf::Vector2f((points + i) -> x, (points + i) -> y), sf::Color::White);
+        *(array + i) = sf::Vertex(sf::Vector2f((points + i) -> x, (points + i) -> y), sf::Color(255, 255/(i+1), 255/(i+1)));
 
     window.clear(sf::Color::Black);
     window.draw(array, this -> pointCount, sf::PrimitiveType::LinesStrip);
